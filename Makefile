@@ -19,7 +19,7 @@ BIN ?= velero-plugin-for-microsoft-azure
 PKG := github.com/vmware-tanzu/velero-plugin-for-microsoft-azure
 
 # Where to push the docker image.
-REGISTRY ?= velero
+REGISTRY ?= danfengliu
 
 # Image name
 IMAGE ?= $(REGISTRY)/$(BIN)
@@ -111,6 +111,12 @@ endif
 	--build-arg=REGISTRY=$(REGISTRY) \
 	-f $(VELERO_DOCKERFILE) .
 	@echo "container: $(IMAGE):$(VERSION)"
+ifeq ($(BUILDX_OUTPUT_TYPE)_$(REGISTRY), registry_danfengliu)
+	docker pull $(IMAGE):$(VERSION)
+	rm -f $(BIN)-$(VERSION).tar
+	docker save $(IMAGE):$(VERSION) -o $(BIN)-$(VERSION).tar
+	gzip -f $(BIN)-$(VERSION).tar
+endif
 
 build-dirs:
 	@mkdir -p _output/bin/$(GOOS)/$(GOARCH)

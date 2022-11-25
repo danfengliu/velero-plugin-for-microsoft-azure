@@ -9,12 +9,12 @@ reviewers:
 
   groups:
     maintainers:
-      - jenting
       - sseago
       - reasonerjt
       - ywk253100
       - blackpiglet
       - qiuming-best
+      - shubham-pampattiwar
 
 options:
   ignore_draft: true

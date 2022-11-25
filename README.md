@@ -11,20 +11,23 @@ This repository contains these plugins to support running Velero on Microsoft Az
 
 - A volume snapshotter plugin for creating snapshots from volumes (during a backup) and volumes from snapshots (during a restore) on Azure Managed Disks.
   - Since v1.4.0 the snapshotter plugin can handle the volumes provisioned by CSI driver `disk.csi.azure.com`
+  - Since v1.5.0 the snapshotter plugin can handle the zone-redundant storage(ZRS) managed disks which can be used to support backup/restore across different available zones.
 
 ## Compatibility
 
 Below is a listing of plugin versions and respective Velero versions that are compatible.
 
-| Plugin Version  | Velero Version |
-|-----------------|----------------|
-| v1.4.x          | v1.8.x         |
-| v1.3.x          | v1.7.x         |
-| v1.2.x          | v1.6.x         |
-| v1.1.x          | v1.5.x         |
-| v1.1.x          | v1.4.x         |
-| v1.0.x          | v1.3.x         |
-| v1.0.x          | v1.2.0         |
+| Plugin Version | Velero Version |
+|----------------|----------------|
+| v1.6.x         | v1.10.x        |
+| v1.5.x         | v1.9.x         |
+| v1.4.x         | v1.8.x         |
+| v1.3.x         | v1.7.x         |
+| v1.2.x         | v1.6.x         |
+| v1.1.x         | v1.5.x         |
+| v1.1.x         | v1.4.x         |
+| v1.0.x         | v1.3.x         |
+| v1.0.x         | v1.2.0         |
 
 
 ## Filing issues
@@ -192,7 +195,7 @@ There are two ways to specify the role: use the built-in role or create a custom
    ```
    AZURE_ROLE=Velero
    az role definition create --role-definition '{
-      "Name": "Velero",
+      "Name": "'$AZURE_ROLE'",
       "Description": "Velero related permissions to perform backups, restores and deletions",
       "Actions": [
           "Microsoft.Compute/disks/read",
@@ -358,7 +361,7 @@ Install Velero, including all prerequisites, into the cluster and start the depl
 ```bash
 velero install \
     --provider azure \
-    --plugins velero/velero-plugin-for-microsoft-azure:v1.4.0 \
+    --plugins velero/velero-plugin-for-microsoft-azure:v1.6.0 \
     --bucket $BLOB_CONTAINER \
     --secret-file ./credentials-velero \
     --backup-location-config resourceGroup=$AZURE_BACKUP_RESOURCE_GROUP,storageAccount=$AZURE_STORAGE_ACCOUNT_ID[,subscriptionId=$AZURE_BACKUP_SUBSCRIPTION_ID] \
@@ -372,14 +375,14 @@ If you're using **AAD Pod Identity**, you now need to add the `aadpodidbinding=$
 ```bash
 velero install \
     --provider azure \
-    --plugins velero/velero-plugin-for-microsoft-azure:v1.4.0 \
+    --plugins velero/velero-plugin-for-microsoft-azure:v1.6.0 \
     --bucket $BLOB_CONTAINER \
     --secret-file ./credentials-velero \
     --backup-location-config resourceGroup=$AZURE_BACKUP_RESOURCE_GROUP,storageAccount=$AZURE_STORAGE_ACCOUNT_ID,storageAccountKeyEnvVar=AZURE_STORAGE_ACCOUNT_ACCESS_KEY[,subscriptionId=$AZURE_BACKUP_SUBSCRIPTION_ID] \
     --use-volume-snapshots=false
 ```
 
-Additionally, you can specify `--use-restic` to enable restic support, and `--wait` to wait for the deployment to be ready.
+Additionally, you can specify `--use-node-agent` to enable node agent support, and `--wait` to wait for the deployment to be ready.
 
 ### Optional installation steps
 1. Specify [additional configurable parameters][7] for the `--backup-location-config` flag.
